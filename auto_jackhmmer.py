@@ -1,5 +1,6 @@
 import os
 import argparse
+import file_precheck
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-I', help='Number of iterations', default=3)
@@ -18,7 +19,9 @@ def multi_open(multi):
             base = i.split('.')[0]
         else:
             base = i
-        os.system(f'python3 file_process.py -W {WEBBROWSER} -F {multi}{i} -B {base} -I {args.I}')
+        temp_list = file_precheck.check(f'{multi}{i}')
+        for i1 in temp_list:
+            os.system(f'python3 file_process.py -W {WEBBROWSER} -F {i1} -B {base} -I {args.I}')
 
 
 if args.F == '' and args.M == '':
@@ -29,7 +32,9 @@ elif args.F and args.M:
     exit(1)
 elif args.F:
     if args.B:
-        os.system(f'python3 file_process.py -W {WEBBROWSER} -F {args.F} -B {args.B} -I {args.I}')
+        temp_list = file_precheck.check(f'{args.F}')
+        for i1 in temp_list:
+            os.system(f'python3 file_process.py -W {WEBBROWSER} -F {i1} -B {args.B} -I {args.I}')
     else:
         print('Base name missing!')
         parser.print_help()

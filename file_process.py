@@ -75,7 +75,11 @@ def get_resutls_pages(iters, base_name, base_url):
         url[-2] = f'{url[-2].split(".")[0]}.{iter_number + 1}'
         url[-1] = 'domain'
         url = '/'.join(url)
-        driver.get(url)
+        try:                            #
+            driver.get(url)             #
+        except:                         #
+            print('Timeout Exception')  #
+            driver.get(url)             #
         error = driver.find_element_by_xpath('//*[@id="error"]').text
         if 'Please wait for the search to complete.' in error:
             time.sleep(2)
@@ -154,38 +158,41 @@ def prepare_summary_document(doc_base_name, image_base, iterations, data):
 	\item \href{https://www.uniprot.org/help/}{Strona pomocy w Uniprot}
         '''
         for i in range(iters):
-            doc.write(r'\href{' + data[i][3] + '}{')
-            doc.write(f'Iteration {i+1}')
-            doc.write('}\n')
-            doc.write(r'\begin{itemize}')
-            doc.write('\n')
-            for i1 in range(len(data[i][1])):
-                doc.write(r'\item ')
-                for i2 in range(len(data[i][0][i1])):
-                    text = data[i][0][i1][i2]
-                    if '_' in text:
-                        text2 = text.replace('_', r'\_')
-                        doc.write(text2)
-                    else:
-                        doc.write(text)
-                doc.write(' - ')
-                doc.write(data[i][1][i1])
-                doc.write(' Sequences')
-                doc.write(r' \href{')
-                doc.write(data[i][2][i1])
-                doc.write(r'}{')
-                doc.write('LINK')
+            try:
+                doc.write(r'\href{' + data[i][3] + '}{')
+                doc.write(f'Iteration {i+1}')
                 doc.write('}\n')
-            doc.write(r'\end{itemize}')
-            doc.write('\n')
-            doc.write(r'\begin{figure}[h]')
-            doc.write('\n')
-            doc.write(r'\includegraphics[width=\textwidth]{' + f'{image}{i}' + '}')
-            doc.write('\n')
-            doc.write(r'\end{figure}')
-            doc.write('\n')
-            doc.write(r'\newpage')
-            doc.write('\n')
+                doc.write(r'\begin{itemize}')
+                doc.write('\n')
+                for i1 in range(len(data[i][1])):
+                    doc.write(r'\item ')
+                    for i2 in range(len(data[i][0][i1])):
+                        text = data[i][0][i1][i2]
+                        if '_' in text:
+                            text2 = text.replace('_', r'\_')
+                            doc.write(text2)
+                        else:
+                            doc.write(text)
+                    doc.write(' - ')
+                    doc.write(data[i][1][i1])
+                    doc.write(' Sequences')
+                    doc.write(r' \href{')
+                    doc.write(data[i][2][i1])
+                    doc.write(r'}{')
+                    doc.write('LINK')
+                    doc.write('}\n')
+                doc.write(r'\end{itemize}')
+                doc.write('\n')
+                doc.write(r'\begin{figure}[h]')
+                doc.write('\n')
+                doc.write(r'\includegraphics[width=\textwidth]{' + f'{image}{i}' + '}')
+                doc.write('\n')
+                doc.write(r'\end{figure}')
+                doc.write('\n')
+                doc.write(r'\newpage')
+                doc.write('\n')
+            except IndexError:
+                doc.write('Run finished (Nothing more found or search took too long to finish)!')
         doc.write(r'\end{document}')
 
     def generate_pdf(doc_base_name):
@@ -220,3 +227,6 @@ def main():
 
 
 main()
+
+# Max Seq: 500
+# Max lines: 5.000

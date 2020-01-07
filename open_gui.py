@@ -1,6 +1,7 @@
 import os
 from tkinter import *
 from tkinter import filedialog
+import file_precheck
 
 WEBBROWSER = open('config/config.txt').readlines()[1].rstrip()
 xsize = 800
@@ -40,7 +41,11 @@ def start_run():
                 base = base.split('/')[-1]
             if '.' in base:
                 base = base.split('.')[0]
-            os.system(f'python3 file_process.py -W {WEBBROWSER} -F {i} -B {base} -I 2')
+            temp_list = file_precheck.check(i)
+            # os.system(f'python3 file_process.py -W {WEBBROWSER} -F {temp_list[0]} -B {base} -I 3')
+            for i1 in temp_list:
+                os.system(f'python3 file_process.py -W {WEBBROWSER} -F {i1} -B {base} -I 3')
+                break
 
 
 root = Tk()
